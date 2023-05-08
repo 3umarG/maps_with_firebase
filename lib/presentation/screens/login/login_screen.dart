@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maps_tutorial/business/auth/auth_cubit.dart';
 import 'package:maps_tutorial/core/constants/texts.dart';
+import 'package:maps_tutorial/presentation/widgets/loading_dialog.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -11,49 +14,65 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          body: Container(
-            padding: const EdgeInsets.all(10),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildHeaderForLoginScreen(),
-                  const SizedBox(
-                    height: 36,
-                  ),
-                  _buildPhoneRow(),
-                  const SizedBox(
-                    height: 55,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 3),
-                          backgroundColor: Colors.deepPurple),
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          formKey.currentState!.save();
-                          Navigator.pushReplacementNamed(
-                              context, AppTexts.otpScreenRoute, arguments:phone);
-                        }
-                      },
-                      child: const Text(
-                        "Next",
-                        style: TextStyle(
-                          fontSize: 30,
-                        ),
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildHeaderForLoginScreen(),
+              const SizedBox(
+                height: 36,
+              ),
+              _buildPhoneRow(),
+              const SizedBox(
+                height: 55,
+              ),
+              BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthLoadingState) {
+                    showLoadingDialog(context);
+                  } else if (state is AuthErrorState) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(state.exception.message),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 5),
+                    ));
+                  }else if(state is AuthPhoneNumberSubmittedState){
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, AppTexts.otpScreenRoute);
+                  }
+                },
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 3),
+                        backgroundColor: Colors.deepPurple),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        formKey.currentState!.save();
+                        context.read<AuthCubit>().submitPhone(phone);
+                      }
+                    },
+                    child: const Text(
+                      "Next",
+                      style: TextStyle(
+                        fontSize: 30,
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ));
+        ),
+      ),
+    ));
   }
 
   _buildHeaderForLoginScreen() {
@@ -99,7 +118,6 @@ class LoginScreen extends StatelessWidget {
               enabledBorder: _border(),
               disabledBorder: _border(),
               focusedBorder: _border(),
-
             ),
           ),
         ),
@@ -120,7 +138,6 @@ class LoginScreen extends StatelessWidget {
               enabledBorder: _border(),
               disabledBorder: _border(),
               focusedBorder: _border(),
-
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -141,11 +158,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-
   String _generateCountryFlag(String code) {
     String flag = code.toUpperCase().replaceAllMapped(RegExp(r'[A-Z]'),
-            (match) =>
-            String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397));
+        (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397));
 
     return flag;
   }

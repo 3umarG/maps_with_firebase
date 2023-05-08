@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:maps_tutorial/core/constants/texts.dart';
 
 enum FirebaseErrorTypes {
-
   /// Timeout
   timeOut,
 
@@ -26,7 +26,6 @@ enum FirebaseErrorTypes {
   /// Another exceptions without any cause
   unknownError,
 
-
   // New enum types
   credentialAlreadyInUse,
   invalidVerificationId,
@@ -36,6 +35,7 @@ enum FirebaseErrorTypes {
   userDisabled,
   userNotFound,
   genericSignInError,
+  missingClient,
 }
 
 class FirebaseExceptionType {
@@ -45,35 +45,67 @@ class FirebaseExceptionType {
   FirebaseExceptionType(this.errorType, this.message);
 }
 
-FirebaseExceptionType getExceptionTypeFromMessage(String message) {
-  switch (message) {
-    case ExceptionMessages.invalidPhoneNumber:
-      return FirebaseExceptionType(FirebaseErrorTypes.invalidPhoneNumber, message);
-    case ExceptionMessages.quotaExceeded:
-      return FirebaseExceptionType(FirebaseErrorTypes.quotaExceeded, message);
-    case ExceptionMessages.appNotAuthorized:
-      return FirebaseExceptionType(FirebaseErrorTypes.appNotAuthorized, message);
-    case ExceptionMessages.invalidVerificationCode:
-      return FirebaseExceptionType(FirebaseErrorTypes.invalidVerificationCode, message);
-    case ExceptionMessages.sessionExpired:
-      return FirebaseExceptionType(FirebaseErrorTypes.sessionExpired, message);
-    case ExceptionMessages.credentialAlreadyInUse:
-      return FirebaseExceptionType(FirebaseErrorTypes.credentialAlreadyInUse, message);
-    case ExceptionMessages.invalidVerificationId:
-      return FirebaseExceptionType(FirebaseErrorTypes.invalidVerificationId, message);
-    case ExceptionMessages.sessionAuthExpired:
-      return FirebaseExceptionType(FirebaseErrorTypes.sessionExpired, message);
-    case ExceptionMessages.missingVerificationCode:
-      return FirebaseExceptionType(FirebaseErrorTypes.missingVerificationCode, message);
-    case ExceptionMessages.invalidCredential:
-      return FirebaseExceptionType(FirebaseErrorTypes.invalidCredential, message);
-    case ExceptionMessages.userDisabled:
-      return FirebaseExceptionType(FirebaseErrorTypes.userDisabled, message);
-    case ExceptionMessages.userNotFound:
-      return FirebaseExceptionType(FirebaseErrorTypes.userNotFound, message);
-    case ExceptionMessages.genericSignInError:
-      return FirebaseExceptionType(FirebaseErrorTypes.genericSignInError, message);
+FirebaseExceptionType getExceptionTypeFromMessage(String code) {
+  debugPrint(code);
+  switch (code) {
+    case ExceptionCodes.missingClient :
+      return FirebaseExceptionType(FirebaseErrorTypes.missingClient, exceptionMessages[code] ??" Missing Client");
+    case ExceptionCodes.invalidPhoneNumber:
+      debugPrint("FOUND");
+      return FirebaseExceptionType(FirebaseErrorTypes.invalidPhoneNumber,
+          exceptionMessages[code]??"Unknown Exception !!");
+    case ExceptionCodes.quotaExceeded:
+      return FirebaseExceptionType(FirebaseErrorTypes.quotaExceeded,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.appNotAuthorized:
+      return FirebaseExceptionType(FirebaseErrorTypes.appNotAuthorized,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.invalidVerificationCode:
+      return FirebaseExceptionType(FirebaseErrorTypes.invalidVerificationCode,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.sessionExpired:
+      return FirebaseExceptionType(FirebaseErrorTypes.sessionExpired,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.credentialAlreadyInUse:
+      return FirebaseExceptionType(FirebaseErrorTypes.credentialAlreadyInUse,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.invalidVerificationId:
+      return FirebaseExceptionType(FirebaseErrorTypes.invalidVerificationId,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.missingVerificationCode:
+      return FirebaseExceptionType(FirebaseErrorTypes.missingVerificationCode,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.invalidCredential:
+      return FirebaseExceptionType(FirebaseErrorTypes.invalidCredential,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.userDisabled:
+      return FirebaseExceptionType(FirebaseErrorTypes.userDisabled,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
+    case ExceptionCodes.userNotFound:
+      return FirebaseExceptionType(FirebaseErrorTypes.userNotFound,
+          exceptionMessages[code] ?? "Unknown Exception Message !! ");
     default:
-      return FirebaseExceptionType(FirebaseErrorTypes.unknownError, message);
+      return FirebaseExceptionType(FirebaseErrorTypes.unknownError, code);
   }
 }
+
+Map<String, String> exceptionMessages = {
+  // FirebaseAuthException
+  ExceptionCodes.invalidPhoneNumber : ExceptionMessages.invalidPhoneNumber,
+  ExceptionCodes.missingClient : ExceptionMessages.missingClient,
+  ExceptionCodes.invalidVerificationCode:
+      ExceptionMessages.invalidVerificationCode,
+  ExceptionCodes.credentialAlreadyInUse:
+      ExceptionMessages.credentialAlreadyInUse,
+  ExceptionCodes.invalidVerificationId: ExceptionMessages.invalidVerificationId,
+  ExceptionCodes.sessionExpired: ExceptionMessages.sessionExpired,
+  ExceptionCodes.missingVerificationCode:
+      ExceptionMessages.missingVerificationCode,
+  ExceptionCodes.invalidCredential: ExceptionMessages.invalidCredential,
+  ExceptionCodes.userDisabled: ExceptionMessages.userDisabled,
+  ExceptionCodes.userNotFound: ExceptionMessages.userNotFound,
+  ExceptionCodes.quotaExceeded : ExceptionMessages.quotaExceeded,
+
+  // FirebaseException
+  ExceptionCodes.signInError: ExceptionMessages.genericSignInError,
+};

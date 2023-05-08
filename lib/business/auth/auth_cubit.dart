@@ -34,7 +34,9 @@ class AuthCubit extends Cubit<AuthState> {
   /// ex : the phone number is not correct.
   void verificationFailed(FirebaseAuthException error) {
     debugPrint("verificationFailed() : ${error.message!}");
-    final exceptionType = getExceptionTypeFromMessage(error.message!);
+    debugPrint("verificationFailed() : ${error.code}");
+    final exceptionType = getExceptionTypeFromMessage(error.code.trim());
+    debugPrint(exceptionType.errorType.name);
     emit(AuthErrorState(exceptionType));
   }
 

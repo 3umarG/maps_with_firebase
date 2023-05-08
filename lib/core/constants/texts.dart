@@ -4,6 +4,7 @@ abstract class AppTexts {
 }
 
 abstract class ExceptionMessages {
+  static const String missingClient = "This request is missing a valid app identifier";
   static const String invalidPhoneNumber =
       "The provided phone number is invalid.";
   static const String quotaExceeded =
@@ -32,4 +33,30 @@ abstract class ExceptionMessages {
       "There is no user corresponding to the given credential.";
   static const String genericSignInError =
       "An error occurred during the sign-in process.";
+}
+
+abstract class ExceptionCodes {
+  // FirebaseAuthException
+  static const missingClient = "missing-client-identifier";
+  static const String quotaExceeded = "quota-exceeded";
+  static const String appNotAuthorized = "app-not-authorized";
+  static const String invalidPhoneNumber = "invalid-phone-number";
+  static const String invalidVerificationCode = "invalid-verification-code";
+  static const String credentialAlreadyInUse = "credential-already-in-use";
+  static const String invalidVerificationId = "invalid-verification-id";
+  static const String sessionExpired = "session-expired";
+  static const String missingVerificationCode = "missing-verification-code";
+  static const String invalidCredential = "invalid-credential";
+  static const String userDisabled = "user-disabled";
+  static const String userNotFound = "user-not-found";
+
+  // FirebaseException
+  static const String signInError = "sign-in-error";
+
+  // Additional Exceptions
+  static const String accountExistsWithDifferentCredential =
+      "account-exists-with-different-credential";
+  static const String emailAlreadyInUse = "email-already-in-use";
+  static const String operationNotAllowed = "operation-not-allowed";
+  static const String wrongPassword = "wrong-password";
 }
