@@ -9,30 +9,6 @@ class PhoneCustomRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        /*
-        Expanded(
-          flex: 1,
-          child: Container(
-            height: 55,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Text(
-                ,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  letterSpacing: 2,
-                ),
-              ),
-            ),
-          ),
-        ),
-
-         */
         Expanded(
           flex: 1,
           child: TextFormField(
