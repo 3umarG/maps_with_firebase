@@ -6,7 +6,7 @@ class AppRouter {
   Route? generateRoutes(RouteSettings routeSettings){
     switch(routeSettings.name) {
       case AppTexts.loginScreenRoute:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) =>  LoginScreen());
       default:
         return null;
     }
