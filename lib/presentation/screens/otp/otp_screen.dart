@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../business/auth/auth_cubit.dart';
+import '../../../core/constants/texts.dart';
+import '../../widgets/loading_dialog.dart';
+
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({Key? key, required this.phone}) : super(key: key);
+  OtpScreen({Key? key, required this.phone}) : super(key: key);
   final String phone;
+  late String otpCode;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +22,9 @@ class OtpScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildHeaderText(phone),
-              const SizedBox(height: 55,),
+              const SizedBox(
+                height: 55,
+              ),
               _buildCustomOtpPinCode(context),
             ],
           ),
@@ -49,41 +57,53 @@ class OtpScreen extends StatelessWidget {
   }
 
   _buildCustomOtpPinCode(BuildContext context) {
-    return PinCodeTextField(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      length: 6,
-      obscureText: false,
-      animationType: AnimationType.scale,
-     autoFocus: true,
-      keyboardType: TextInputType.number,
-      pinTheme: PinTheme(
-        shape: PinCodeFieldShape.box,
-        borderRadius: BorderRadius.circular(5),
-        fieldHeight: 50,
-        fieldWidth: 40,
-        activeFillColor: Colors.deepPurple.shade300,
-        activeColor: Colors.deepPurple,
-        selectedColor: Colors.deepPurple,
-        selectedFillColor: Colors.deepPurple.shade100,
-        inactiveColor: Colors.deepPurple,
-        inactiveFillColor: Colors.white
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthLoadingState) {
+          showLoadingDialog(context);
+        } else if (state is AuthErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.exception.message),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ));
+        } else if (state is AuthOTPVerifiedState) {
+          Navigator.pushReplacementNamed(
+            context,
+            AppTexts.homeScreenRoute,
+          );
+        }
+      },
+      child: PinCodeTextField(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        length: 6,
+        obscureText: false,
+        animationType: AnimationType.scale,
+        autoFocus: true,
+        keyboardType: TextInputType.number,
+        pinTheme: PinTheme(
+            shape: PinCodeFieldShape.box,
+            borderRadius: BorderRadius.circular(5),
+            fieldHeight: 50,
+            fieldWidth: 40,
+            activeFillColor: Colors.deepPurple.shade300,
+            activeColor: Colors.deepPurple,
+            selectedColor: Colors.deepPurple,
+            selectedFillColor: Colors.deepPurple.shade100,
+            inactiveColor: Colors.deepPurple,
+            inactiveFillColor: Colors.white),
+        animationDuration: const Duration(milliseconds: 300),
+        backgroundColor: Colors.white,
+        enableActiveFill: true,
+        onCompleted: (submittedOtpCode) async {
+          otpCode = submittedOtpCode;
+          await context.read<AuthCubit>().submitOTP(submittedOtpCode);
+        },
+        appContext: context,
+        onChanged: (String value) {
+          debugPrint(value);
+        },
       ),
-      animationDuration: const Duration(milliseconds: 300),
-      backgroundColor: Colors.white,
-      enableActiveFill: true,
-      onCompleted: (v) {
-        print("Completed");
-      },
-      onChanged: (value) {
-        print(value);
-      },
-      beforeTextPaste: (text) {
-        print("Allowing to paste $text");
-        //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-        //but you can show anything you want here, like your pop up saying wrong paste format or etc
-        return true;
-      },
-      appContext: context,
     );
   }
 }

@@ -8,7 +8,7 @@ part 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
 
-  String? verificationId;
+  String verificationId = '';
 
   Future<void> submitPhone(String phone) async {
     emit(AuthLoadingState());
@@ -17,7 +17,8 @@ class AuthCubit extends Cubit<AuthState> {
       verificationCompleted: verificationCompleted,
       verificationFailed: verificationFailed,
       codeSent: codeSent,
-      timeout: const Duration(seconds: 6),
+
+      timeout: const Duration(minutes: 1),
       codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
     );
   }
@@ -42,9 +43,9 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// This method is used when the code is received
   /// that means your phone is correct , and you received code for OTP
-  void codeSent(String verificationId, int? forceResendingToken) {
-    debugPrint("Code Sent");
-    this.verificationId = verificationId;
+  void codeSent(String vi, int? forceResendingToken) {
+    debugPrint("Code Sent : $vi");
+    verificationId = vi;
     emit(AuthPhoneNumberSubmittedState());
   }
 
@@ -72,8 +73,12 @@ class AuthCubit extends Cubit<AuthState> {
   /// if the Android device doesn't trigger the received OTP
   Future<void> submitOTP(String otpCode) async {
     try {
+      if(verificationId.isEmpty){
+        emit(AuthErrorState(FirebaseExceptionType(FirebaseErrorTypes.invalidVerificationId , "Null VID")));
+        return;
+      }
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: verificationId!, smsCode: otpCode);
+          verificationId: verificationId, smsCode: otpCode);
 
       await signIn(credential);
     } on FirebaseException catch (e) {

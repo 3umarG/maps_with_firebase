@@ -41,9 +41,13 @@ class LoginScreen extends StatelessWidget {
                       backgroundColor: Colors.red,
                       duration: const Duration(seconds: 5),
                     ));
-                  }else if(state is AuthPhoneNumberSubmittedState){
+                  } else if (state is AuthPhoneNumberSubmittedState) {
                     Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, AppTexts.otpScreenRoute);
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppTexts.otpScreenRoute,
+                      arguments: phone,
+                    );
                   }
                 },
                 child: Align(
@@ -53,10 +57,10 @@ class LoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 3),
                         backgroundColor: Colors.deepPurple),
-                    onPressed: () {
+                    onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         formKey.currentState!.save();
-                        context.read<AuthCubit>().submitPhone(phone);
+                        await context.read<AuthCubit>().submitPhone(phone);
                       }
                     },
                     child: const Text(

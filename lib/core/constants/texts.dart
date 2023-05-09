@@ -1,6 +1,7 @@
 abstract class AppTexts {
-  static const loginScreenRoute = '/';
+  static const loginScreenRoute = '/login';
   static const otpScreenRoute = '/otp';
+  static const homeScreenRoute = '/home';
 }
 
 abstract class ExceptionMessages {
